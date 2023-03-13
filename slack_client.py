@@ -15,8 +15,7 @@ class SlackClient:
     """Client used to interact with Slack."""
 
     def __init__(self, config: SlackConfig):
-        """
-        Initialize the Slack Client.
+        """Initialize the Slack Client.
 
         Args:
             config: Pydantic Slack config model.
