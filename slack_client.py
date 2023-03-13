@@ -27,8 +27,8 @@ class SlackClient:
         self.response = None
 
     def post_simple_message(self, message: str):
-        """
-        Post a simple message on Slack
+        """Post a simple message on Slack.
+
         Args:
              message : str
         """
@@ -43,8 +43,8 @@ class SlackClient:
             )
 
     def send_secret_message_in_channel(self, message: str, user: str = None):
-        """
-        Post a message on slack
+        """Post a message on slack.
+
         Args:
              message : str
              user : str : user id (member id)
@@ -60,9 +60,7 @@ class SlackClient:
             )
 
     def send_block_message(self):
-        """
-        Send a custom block message on Slack and store the response
-        """
+        """Send a custom block message on Slack and store the response."""
         try:
             self.response = self.slack_client.chat_postMessage(
                 channel="#" + self.slack_channel, blocks=self.blocks
@@ -73,9 +71,7 @@ class SlackClient:
             )
 
     def update_block_message(self):
-        """
-        Dynamically update block message and update the response
-        """
+        """Dynamically update block message and update the response."""
         try:
             self.response = self.slack_client.chat_update(
                 channel=self.response["channel"],
@@ -88,8 +84,8 @@ class SlackClient:
             )
 
     def initialize_block_message(self, job_name: str = "BigQuery Data Migration"):
-        """
-        Initialize Slack block message for Python Jobs and send it.
+        """Initialize Slack block message for Python Jobs and send it.
+
         Args:
              job_name: str : Name of python job
         """
@@ -100,7 +96,8 @@ class SlackClient:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"Hello *Data Team*! \n Starting *{job_name}* :on: .\n Date: {datetime.today().strftime('%Y-%m-%d')} \t Time: {datetime.now().time()} ",
+                        "text": f"Hello *Data Team*! \n Starting *{job_name}* :on: .\n "
+                        f"Date: {datetime.now().strftime('%Y-%m-%d')} \t Time: {datetime.now().time()} ",
                     }
                 ],
             },
@@ -109,8 +106,8 @@ class SlackClient:
         self.send_block_message()
 
     def add_message_block(self, message: str, img_url: str = None, temp: bool = False):
-        """
-        Add a message to the Slack block message
+        """Add a message to the Slack block message.
+
         Args:
             message: str
             img_url: str [Optional]
@@ -139,9 +136,7 @@ class SlackClient:
             self.blocks.pop()
 
     def add_success_block(self):
-        """
-        Add success message to block
-        """
+        """Add success message to block."""
         self.blocks.append(
             {
                 "type": "context",
@@ -153,8 +148,8 @@ class SlackClient:
         self.update_block_message()
 
     def add_error_block(self, error_msg: str):
-        """
-        Add error block to the slack message block
+        """Add error block to the slack message block.
+
         Args:
             error_msg : str
         """
@@ -172,9 +167,7 @@ class SlackClient:
         self.update_block_message()
 
     def notify_error_block(self, user1: str, user2: str):
-        """
-        Add a Notify block
-        """
+        """Add a Notify block."""
         self.blocks.append(
             {
                 "type": "context",
