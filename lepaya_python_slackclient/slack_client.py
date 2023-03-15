@@ -5,7 +5,6 @@ from datetime import datetime
 import structlog
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
 from models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
