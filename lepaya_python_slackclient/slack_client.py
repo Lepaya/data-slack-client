@@ -82,7 +82,7 @@ class SlackClient:
                 f"Could not post message on Slack. Error: {e.response['error']}"
             )
 
-    def initialize_block_message(self, job_name: str = "BigQuery Data Migration"):
+    def initialize_block_message(self, job_name: str):
         """Initialize Slack block message for Python Jobs and send it.
 
         Args:
