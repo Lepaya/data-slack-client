@@ -20,6 +20,7 @@ class SlackClient:
 
         Args:
             config: Pydantic Slack config model.
+            python_job_name: Name of the Python job for the block message title.
         """
         self.config = config
         self.slack_client = WebClient(token=self.config.bot_token)
