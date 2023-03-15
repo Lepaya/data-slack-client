@@ -4,10 +4,9 @@ from datetime import datetime
 from typing import List
 
 import structlog
+from models.config_model import SlackConfig
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
-from models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
 
@@ -110,7 +109,7 @@ class SlackClient:
         self.send_block_message()
 
     def add_message_block(
-            self, message: str, img_url: str | None = None, temp: bool = False
+        self, message: str, img_url: str | None = None, temp: bool = False
     ):
         """Add a message to the Slack block message.
 
