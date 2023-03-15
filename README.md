@@ -42,21 +42,12 @@ Make sure to replace YOUR_BOT_TOKEN_HERE, YOUR_CHANNEL_NAME_HERE, YOUR_USER_1_NA
 ### Functions
 
 The following methods are available for use:
-
-- ``__init__(self, config: SlackConfig, python_job_name: str)``: Initializes the SlackClient object with the given SlackConfig object and the name of the Python job. It also sets up some instance variables for the object.
-
-- ``post_simple_message(self, message: str)``: Posts a simple message on Slack with the given text message.
-
-- ``send_secret_message_in_channel(self, message: str, user: str | None = None)``: Posts a secret message on Slack that is visible only to the specified user (identified by their member ID) in the channel.
-
-- ``send_block_message(self)``: Sends a custom block message on Slack and stores the response.
-
-- ``update_block_message(self)``: Dynamically updates the previously sent block message.
-
-- ``initialize_block_message(self, job_name: str)``: Initializes the Slack block message for Python jobs and sends it with the given job name.
-
-- ``add_message_block(self, message: str, img_url: str | None = None, temp: bool = False)``: Adds a message block to the previously sent block message with the given message and optional image URL. If temp is True, the message block is removed after updating the block message.
-
-- ``add_success_block(self)``: Adds a success message block to the previously sent block message.
-
-- ``add_error_block(self, error_msg: str)``: Adds an error message block to the previously sent block message with the given error message. It also mentions two users in the Slack channel to fix the error.
+- ``__init__(self, config: SlackConfig, python_job_name: str)``: Initializes the Slack client and message blocks.
+- ``post_simple_message(self, message: str)``: Posts a simple plain text message on Slack.
+- ``send_secret_message_in_channel(self, message: str, user: str | None = None)``: Sends a secret message on Slack to a particular user.
+- ``send_block_message(self)``: Sends a block message on Slack and stores the response.
+- ``update_block_message(self)``: Dynamically updates the block message and updates the response.
+- ``initialize_block_message(self, job_name: str)``: Initializes the Slack block message and sends it to Slack.
+- ``add_message_block(self, message: str, img_url: str | None = None, temp: bool = False)``: Adds a message to the Slack block message.
+- ``add_success_block(self)``: Adds a success message to the Slack block message.
+- ``add_error_block(self, error_message: str | None = None, notify: bool = False)``: Adds an error block to the Slack message block.
