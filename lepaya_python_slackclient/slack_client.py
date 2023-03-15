@@ -127,7 +127,7 @@ class SlackClient:
                         {
                             "type": "image",
                             "image_url": img_url,
-                            "alt_text": "contentstack_image",
+                            "alt_text": "image url",
                         },
                         {"type": "mrkdwn", "text": message},
                     ],
