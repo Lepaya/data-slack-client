@@ -1,11 +1,12 @@
 """Client to interact with Slack."""
 
 from datetime import datetime
+from typing import List
 
 import structlog
+from models.config_model import SlackConfig
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
 
@@ -21,7 +22,7 @@ class SlackClient:
         """
         self.slack_client = WebClient(token=config.bot_token)
         self.slack_channel = config.channel
-        self.blocks = []
+        self.blocks: List[dict] = []
         self.response = None
 
     def post_simple_message(self, message: str):
@@ -40,7 +41,7 @@ class SlackClient:
                 f"Could not post message on Slack. Error: {e.response['error']}"
             )
 
-    def send_secret_message_in_channel(self, message: str, user: str = None):
+    def send_secret_message_in_channel(self, message: str, user: str | None = None):
         """Post a message on slack.
 
         Args:
@@ -103,7 +104,9 @@ class SlackClient:
         ]
         self.send_block_message()
 
-    def add_message_block(self, message: str, img_url: str = None, temp: bool = False):
+    def add_message_block(
+        self, message: str, img_url: str | None = None, temp: bool = False
+    ):
         """Add a message to the Slack block message.
 
         Args:
