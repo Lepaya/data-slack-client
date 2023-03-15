@@ -14,16 +14,19 @@ LOGGER = structlog.get_logger()
 class SlackClient:
     """Client used to interact with Slack."""
 
-    def __init__(self, config: SlackConfig):
-        """Initialize the Slack Client.
+    def __init__(self, config: SlackConfig, python_job_name: str):
+        """
+        Initialize the Slack Client.
 
         Args:
             config: Pydantic Slack config model.
         """
-        self.slack_client = WebClient(token=config.bot_token)
-        self.slack_channel = config.channel
+        self.config = config
+        self.slack_client = WebClient(token=self.config.bot_token)
+        self.slack_channel = self.config.channel
         self.blocks: List[dict] = []
         self.response = None
+        self.initialize_block_message(job_name=python_job_name)
 
     def post_simple_message(self, message: str):
         """Post a simple message on Slack.
@@ -42,7 +45,7 @@ class SlackClient:
             )
 
     def send_secret_message_in_channel(self, message: str, user: str | None = None):
-        """Post a message on slack.
+        """Post a secret message on slack.
 
         Args:
              message : str
@@ -95,8 +98,9 @@ class SlackClient:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"Hello *Data Team*! \n Starting *{job_name}* :on: .\n "
-                        f"Date: {datetime.now().strftime('%Y-%m-%d')} \t Time: {datetime.now().time()} ",
+                        "text": f"Hello *Data Team*! \n Starting *{job_name}* :on: .\n \
+                                Date: {datetime.now().strftime('%Y-%m-%d')} \t \
+                                Time: {datetime.now().time()} ",
                     }
                 ],
             },
@@ -122,7 +126,7 @@ class SlackClient:
                         {
                             "type": "image",
                             "image_url": img_url,
-                            "alt_text": "bigquery_image",
+                            "alt_text": "image url",
                         },
                         {"type": "mrkdwn", "text": message},
                     ],
@@ -149,11 +153,7 @@ class SlackClient:
         self.update_block_message()
 
     def add_error_block(self, error_msg: str):
-        """Add error block to the slack message block.
-
-        Args:
-            error_msg : str
-        """
+        """Add error block to the Slack message block."""
         self.blocks.append(
             {
                 "type": "context",
@@ -165,17 +165,13 @@ class SlackClient:
                 ],
             }
         )
-        self.update_block_message()
-
-    def notify_error_block(self, user1: str, user2: str):
-        """Add a Notify block."""
         self.blocks.append(
             {
                 "type": "context",
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"<@{user1}> and <@{user2}> Please fix the error!",
+                        "text": f"<@{self.config.user1}> and <@{self.config.user2}> Please fix the error!",
                     }
                 ],
             }
