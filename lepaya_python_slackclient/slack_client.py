@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List
 
 import structlog
-from models.config_model import SlackConfig
+from .models.config_model import SlackConfig
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
