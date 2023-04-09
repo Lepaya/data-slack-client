@@ -11,7 +11,6 @@ from slack_sdk.web import SlackResponse
 
 from .models.config_model import SlackConfig
 
-
 LOGGER = structlog.get_logger()
 
 
@@ -29,10 +28,15 @@ class SlackClient:
             python_job_name: Name of Python job.
         """
         self.config = config
-        self.slack_client = WebClient(token=self.config.bot_token)
         self.slack_channel = self.config.channel
         self.blocks: list[dict] = []
         self.response: dict[Any, Any] | SlackResponse = {}
+        try:
+            self.slack_client = WebClient(token=self.config.bot_token)
+        except SlackApiError as e:
+            LOGGER.info(
+                f"Could not initialize SlackClient. Error: {e.response['error']}",
+            )
         self.initialize_block_message(job_name=python_job_name)
 
     def post_simple_message(self, message: str) -> None:
