@@ -23,9 +23,9 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     install_requires=[
-        'slack-sdk',
-        'structlog',
-        'pydantic',
+        'slack-sdk~=3.19',
+        'structlog~=22.3',
+        'pydantic~=1.9',
     ],
     keywords=["python", "slack", "message", "blocks", "dynamic"],
     classifiers=[
