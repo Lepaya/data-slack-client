@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pydantic = "~=1.9"
 slack_sdk = "~=3.19"
 structlog = "~=22.3"
-pydantic = "~=1.9"
 
 [dev-packages]
 add-trailing-comma="~=2.4"
