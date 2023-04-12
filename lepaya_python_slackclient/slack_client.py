@@ -116,9 +116,9 @@ class SlackClient:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"Hello *Data Team*! \n Invoking *{job_name}* :on: .\n \
-                        Date: {datetime.now().strftime('%Y-%m-%d')} \t \
-                        Time: {datetime.now().time()} ",
+                        "text": f"Hello *Data Team*! \n Invoking *{job_name}* :on: .\n"
+                                f"Date: {datetime.now().strftime('%Y-%m-%d')} "
+                                f"Time: {datetime.now().time()}",
                     }
                 ],
             },
@@ -130,6 +130,7 @@ class SlackClient:
             self,
             message: str,
             img_url: str | None = None,
+            img_alt_text: str = "",
             temp: bool = False,
     ) -> None:
         """
@@ -138,6 +139,7 @@ class SlackClient:
         Args:
             message: plain text message.
             img_url: url of the image to add to the message [Optional].
+            img_alt_text: alt text for image [Optional].
             temp: True if this is a temporary message.
         """
         if img_url is not None:
@@ -148,7 +150,7 @@ class SlackClient:
                         {
                             "type": "image",
                             "image_url": img_url,
-                            "alt_text": "contentstack_image",
+                            "alt_text": img_alt_text,
                         },
                         {"type": "mrkdwn", "text": message},
                     ],
@@ -220,8 +222,9 @@ class SlackClient:
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": f"<@{self.config.user1}> and \
-                            <@{self.config.user2}> Please fix the error!",
+                            "text": f"Please fix the error"
+                                    f"<@{self.config.user1}> "
+                                    f"<@{self.config.user2}>",
                         },
                     ],
                 },
