@@ -117,7 +117,7 @@ class SlackClient:
                     {
                         "type": "mrkdwn",
                         "text": f"Hello *Data Team*! \n Invoking *{job_name}* :on: .\n"
-                                f"Date: {datetime.now().strftime('%Y-%m-%d')} "
+                                f"Date: {datetime.now().strftime('%Y-%m-%d')} \t"
                                 f"Time: {datetime.now().time()}",
                     }
                 ],
