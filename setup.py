@@ -14,7 +14,7 @@ LONG_DESCRIPTION = "A package that allows to interact with the slack sdk and dyn
 
 # Setting up
 setup(
-    name="lepaya_python_slackclient",
+    name="slack_client",
     version=VERSION,
     author="Humaid Mollah",
     author_email="humaid.mollah@lepaya.com",
