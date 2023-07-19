@@ -17,7 +17,7 @@ LOGGER = structlog.get_logger()
 class SlackClient:
     """Client used to interact with Slack."""
 
-    def __init__(self, config: SlackConfig, python_job_name: str):
+    def __init__(self, config: SlackConfig, slack_channel: str, python_job_name: str):
         """
         Initialize the Slack Client.
 
@@ -28,7 +28,7 @@ class SlackClient:
             python_job_name: Name of Python job.
         """
         self.config = config
-        self.slack_channel = self.config.channel
+        self.slack_channel = slack_channel
         self.blocks: list[dict] = []
         self.response: dict[Any, Any] | SlackResponse = {}
         try:
@@ -222,13 +222,21 @@ class SlackClient:
                 },
             )
         if notify:
+            assert self.config.user1 is not None or self.config.user2 is not None
+
+            user_str = ""
+            if self.config.user1 is not None:
+                user_str += f"<@{self.config.user1}>"
+            if self.config.user2 is not None:
+                user_str += " " if user_str else "" + f"<@{self.config.user2}>"
+
             self.blocks.append(
                 {
                     "type": "context",
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": f"<@{self.config.user1}> <@{self.config.user2}>",
+                            "text": user_str,
                         },
                     ],
                 },

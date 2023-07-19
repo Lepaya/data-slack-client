@@ -1,4 +1,4 @@
-# Lepaya Slack Client v1.2.1
+# Lepaya Slack Client v1.3
 The Lepaya Slack Client is a Python library that allows you to interact with the Slack API and send custom messages to your Slack channels. This library was developed by Humaid Mollah for Lepaya.
 
 ## Installation
@@ -27,14 +27,13 @@ from lepaya_python_slackclient.slack_client import SlackClient
 ````
 config = SlackConfig(
     bot_token='YOUR_BOT_TOKEN_HERE',
-    channel='YOUR_CHANNEL_NAME_HERE',
     user1='YOUR_USER_1_NAME_HERE',
     user2='YOUR_USER_2_NAME_HERE'
 )
 ````
 
 ````
-slack = SlackClient(config)
+slack = SlackClient(config: SlackConfig, slack_channel: str, python_job_name: str)
 ````
 
 Make sure to replace YOUR_BOT_TOKEN_HERE, YOUR_CHANNEL_NAME_HERE, YOUR_USER_1_NAME_HERE, and YOUR_USER_2_NAME_HERE with the actual values for your Slack configuration.
