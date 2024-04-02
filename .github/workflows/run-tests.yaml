@@ -35,4 +35,5 @@ jobs:
       env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_MEMBER_ID_1: ${{ secrets.SLACK_MEMBER_ID_1 }}
+          SLACK_MEMBER_ID_2: ${{ secrets.SLACK_MEMBER_ID_2 }}
 
