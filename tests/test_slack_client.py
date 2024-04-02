@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from data_slack_client.slack_client import SlackClient
-from data_slack_client.tests.configs.config_loader import load_config
+from tests.configs.config_loader import load_config
 
 
 class TestSlackClient(unittest.TestCase):
