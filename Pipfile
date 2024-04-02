@@ -7,6 +7,7 @@ name = "pypi"
 pydantic = "~=1.9"
 slack_sdk = "~=3.19"
 structlog = "~=22.3"
+pytz = "~=2024.1"
 
 [dev-packages]
 add-trailing-comma="~=2.4"
@@ -25,4 +26,4 @@ sourcery = "~=1.0"
 yapf="~=0.32"
 
 [requires]
-python_version = "3.10"
+python_version = "3.11"
