@@ -1,3 +1,0 @@
-slack-sdk~=3.19
-structlog~=22.3
-pydantic~=1.9
