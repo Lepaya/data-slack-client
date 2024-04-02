@@ -13,7 +13,8 @@ class TestSlackClient(unittest.TestCase):
         PROJECT_ROOT = Path(__file__).parent.parent.resolve()
         CONFIG_FILE_PATH = f"{PROJECT_ROOT}/tests/configs/config.yml"
         configs = load_config(CONFIG_FILE_PATH)
-        cls.client = SlackClient(config=configs.slack, slack_channel='python-test', python_job_name='Slack-Client Testing')
+        cls.client = SlackClient(config=configs.slack, slack_channel='python-test',
+                                 python_job_name='Slack-Client Testing')
 
     def test_post_simple_message(self):
         """Test posting a simple message."""
