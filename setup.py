@@ -26,6 +26,7 @@ setup(
         'slack-sdk~=3.19',
         'structlog~=22.3',
         'pydantic~=1.9',
+        'pytz~=2024.1'
     ],
     keywords=["python", "slack", "message", "blocks", "dynamic"],
     classifiers=[
