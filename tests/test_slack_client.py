@@ -10,8 +10,8 @@ class TestSlackClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Initialize the SlackClient with valid configuration."""
-        PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
-        CONFIG_FILE_PATH = f"{PROJECT_ROOT}/data_slack_client/tests/configs/config.yml"
+        PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+        CONFIG_FILE_PATH = f"{PROJECT_ROOT}/tests/configs/config.yml"
         configs = load_config(CONFIG_FILE_PATH)
         cls.client = SlackClient(config=configs.slack, slack_channel='python-test', python_job_name='Slack-Client Testing')
 
