@@ -1,14 +1,8 @@
 import unittest
-from data_slack_client.slack_client import SlackClient
-from data_slack_client.models.config_model import SlackConfig
+from pathlib import Path
 
-test_config = SlackConfig(
-    bot_token='xoxb-2764711569008-4272862514676-zagRpjF0Es6xDf4kA5rcGtYS',
-    user1='U03TQ448VS8',  # Can be None
-    user2='U03TQ448VS8'  # Can be None
-)
-slack_channel = 'python-test'
-python_job_name = 'Slack-Client Testing'
+from data_slack_client.slack_client import SlackClient
+from data_slack_client.tests.configs.config_loader import load_config
 
 
 class TestSlackClient(unittest.TestCase):
@@ -16,7 +10,10 @@ class TestSlackClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Initialize the SlackClient with valid configuration."""
-        cls.client = SlackClient(config=test_config, slack_channel=slack_channel, python_job_name=python_job_name)
+        PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
+        CONFIG_FILE_PATH = f"{PROJECT_ROOT}/data_slack_client/tests/configs/config.yml"
+        configs = load_config(CONFIG_FILE_PATH)
+        cls.client = SlackClient(config=configs.slack, slack_channel='python-test', python_job_name='Slack-Client Testing')
 
     def test_post_simple_message(self):
         """Test posting a simple message."""
