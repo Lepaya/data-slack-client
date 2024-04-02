@@ -228,7 +228,10 @@ class SlackClient:
             if self.config.user1 is not None:
                 user_str += f"<@{self.config.user1}>"
             if self.config.user2 is not None:
-                user_str += " " if user_str else "" + f"<@{self.config.user2}>"
+                # Add a space before appending user2 if user_str already contains user1
+                if user_str:
+                    user_str += " "
+                user_str += f"<@{self.config.user2}>"
 
             self.blocks.append(
                 {
