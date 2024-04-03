@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import MagicMock, patch
-from data_slack_client.slack_client import SlackClient  # Adjust the import path according to your project structure
-from data_slack_client.models.config_model import SlackConfig  # Adjust the import path
+from unittest.mock import patch
+
+from data_slack_client.models.config_model import SlackConfig
+from data_slack_client.slack_client import SlackClient
 
 
 class TestSlackClient(unittest.TestCase):
