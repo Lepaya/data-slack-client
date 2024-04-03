@@ -101,7 +101,7 @@ class SlackClient:
                 blocks=self.blocks,
                 ts=self.response["ts"],
             )
-        except SlackApiError as e:
+        except (SlackApiError, KeyError) as e:
             LOGGER.info(
                 f"Could not post message on Slack. "
                 f"Error: {e.response['error']}.",
