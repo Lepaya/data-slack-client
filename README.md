@@ -27,8 +27,8 @@ from lepaya_python_slackclient.slack_client import SlackClient
 ````
 config = SlackConfig(
     bot_token='YOUR_BOT_TOKEN_HERE',
-    user1='YOUR_USER_1_NAME_HERE',
-    user2='YOUR_USER_2_NAME_HERE'
+    user1='YOUR_USER_1_NAME_HERE', : Optional
+    user2='YOUR_USER_2_NAME_HERE' : Optional
 )
 ````
 
@@ -41,7 +41,7 @@ Make sure to replace YOUR_BOT_TOKEN_HERE, YOUR_CHANNEL_NAME_HERE, YOUR_USER_1_NA
 ### Functions
 
 The following methods are available for use:
-- ``__init__(self, config: SlackConfig, python_job_name: str)``: Initializes the Slack client and message blocks.
+- ``__init__(self, config: SlackConfig, slack_channel: str, init_block: bool = True, python_job_name: Union[str, None] = None)``: Initializes the Slack client and optionally sends an introduction message blocks.
 - ``post_simple_message(self, message: str)``: Posts a simple plain text message on Slack.
 - ``send_secret_message_in_channel(self, message: str, user: str | None = None)``: Sends a secret message on Slack to a particular user.
 - ``send_block_message(self)``: Sends a block message on Slack and stores the response.
