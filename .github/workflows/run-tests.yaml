@@ -3,37 +3,30 @@ name: Run Tests
 on:
   push:
     branches:
-      test
+      - 'release-*'
 
 jobs:
   build:
-
-    runs-on:
-      ubuntu-latest
-
+    runs-on: ubuntu-latest
     environment: PROD
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
 
-    - name: Install Pipenv
-      run: |
-        python -m pip install --upgrade pip
-        pip install pipenv
+      - name: Install dependencies with Pipenv
+        run: |
+          python -m pip install --upgrade pip 
+          pip install pipenv
+          pipenv install
 
-    - name: Install dependencies
-      run: |
-        pipenv install
-
-    - name: Run tests
-      run: pipenv run python -m unittest discover -s tests
-      env:
+      - name: Run tests
+        run: pipenv run python -m unittest discover -s tests
+        env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_MEMBER_ID_1: ${{ secrets.SLACK_MEMBER_ID_1 }}
           SLACK_MEMBER_ID_2: ${{ secrets.SLACK_MEMBER_ID_2 }}
-
