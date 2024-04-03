@@ -40,28 +40,10 @@ repos:
     pass_filenames: false
     args: [--ignore-missing-imports]
 
-#      - id: pytest
-#        name: pytest
-#        stages: [ commit ]
-#        language: system
-#        entry: pipenv run pytest
-#        types: [ python ]
-#
-#      - id: pytest-cov
-#        name: pytest
-#        stages: [ push ]
-#        language: system
-#        entry: pipenv run pytest --cov --cov-fail-under=100
-#        types: [ python ]
-#        pass_filenames: false
-
-
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.0.4
   hooks:
-    # refer to https://docs.sourcery.ai/Product/Troubleshooting/ to fix errors
     - id: sourcery
-      # The best way to use Sourcery in a pre-commit hook:
       # * review only changed lines:
       # * omit the summary
       args: [--diff=git diff HEAD, --no-summary]
