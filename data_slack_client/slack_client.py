@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Union
+
 import pytz
 import structlog
 from slack_sdk import WebClient
@@ -17,7 +18,10 @@ LOGGER = structlog.get_logger()
 class SlackClient:
     """Client used to interact with Slack."""
 
-    def __init__(self, config: SlackConfig, slack_channel: str, python_job_name: str):
+    def __init__(self, config: SlackConfig,
+                 slack_channel: str,
+                 init_block: bool = True,
+                 python_job_name: Union[str, None] = None):
         """
         Initialize the Slack Client.
 
@@ -25,7 +29,10 @@ class SlackClient:
 
         Args:
             config: Pydantic Slack config model.
-            python_job_name: Name of Python job.
+            slack_channel: Name of Slack-Channel to write to.
+            init_block: True if you want to add an introduction block
+                        containing a python-job-name,date and time; else False.
+            python_job_name: Name of Python-job if init_block is True, else None.
         """
         self.config = config
         self.slack_channel = slack_channel
@@ -35,10 +42,11 @@ class SlackClient:
             self.slack_client = WebClient(token=self.config.bot_token)
         except SlackApiError as e:
             LOGGER.info(
-                f"Could not initialize SlackClient. "
-                f"Error: {e.response['error']}.",
+                f"Could not initialize SlackClient. " f"Error: {e.response['error']}.",
             )
-        self.initialize_block_message(job_name=python_job_name)
+        if init_block is True:
+            assert python_job_name is not None
+            self.initialize_block_message(job_name=python_job_name)
 
     def post_simple_message(self, message: str) -> None:
         """
@@ -54,8 +62,7 @@ class SlackClient:
             )
         except SlackApiError as e:
             LOGGER.info(
-                f"Could not post message on Slack. "
-                f"Error: {e.response['error']}.",
+                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
             )
 
     def send_secret_message_in_channel(
@@ -89,8 +96,7 @@ class SlackClient:
             )
         except SlackApiError as e:
             LOGGER.info(
-                f"Could not post message on Slack. "
-                f"Error: {e.response['error']}.",
+                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
             )
 
     def update_block_message(self) -> None:
@@ -103,8 +109,7 @@ class SlackClient:
             )
         except (SlackApiError, KeyError) as e:
             LOGGER.info(
-                f"Could not post message on Slack. "
-                f"Error: {e.response['error']}.",
+                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
             )
 
     def initialize_block_message(self, job_name: str) -> None:
@@ -115,14 +120,14 @@ class SlackClient:
              job_name: Name of python job (Eg. Salesforce-Updater).
         """
         assert type(job_name) == str
-        amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+        amsterdam_tz = pytz.timezone("Europe/Amsterdam")
         self.blocks = [
             {
                 "type": "context",
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"Hello *Data Team*! \n Invoking *{job_name}* :on: \n"
+                        "text": f"Invoking *{job_name}* :on: \n"
                                 f"Date: {datetime.now(amsterdam_tz).strftime('%Y-%m-%d')} \t"
                                 f"Time: {datetime.now(amsterdam_tz).time()}",
                     }
