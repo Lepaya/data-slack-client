@@ -19,6 +19,8 @@ class TestSlackClient(unittest.TestCase):
             init_block=True,
             python_job_name="Slack-Client Testing",
         )
+        cls.valid_user_id = configs.slack.user1
+        cls.invalid_user_id = "Invalid ID"
 
     def test_post_simple_message(self):
         """Test posting a simple message."""
@@ -30,14 +32,22 @@ class TestSlackClient(unittest.TestCase):
 
     def test_send_secret_message_in_channel(self):
         """Test sending a secret message."""
-        valid_user_id = "valid_user_id"  # Replace with an actual user ID
+
         try:
             self.client.send_secret_message_in_channel(
-                "Secret message test", user=valid_user_id
+                "Secret message test", user=self.valid_user_id
             )
             # Manual verification in Slack is required to confirm message posting
         except Exception as e:
             self.fail(f"Failed to send secret message: {e}")
+
+    def test_send_secret_message_in_channel_invalid_user_id(self):
+        """Test sending a secret to an invalid user."""
+
+        with self.assertRaises(ValueError):
+            self.client.send_secret_message_in_channel(
+                "Secret message test", user=self.invalid_user_id
+            )
 
     def test_send_block_message(self):
         """Test sending a block message."""
