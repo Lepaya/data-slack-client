@@ -10,6 +10,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web import SlackResponse
 
+from .helpers.logging_helper import log, log_and_raise_error
 from .models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
@@ -40,10 +41,10 @@ class SlackClient:
         self.response: dict[Any, Any] | SlackResponse = {}
         try:
             self.slack_client = WebClient(token=self.config.bot_token)
+            log("Successfully initialized Slack WebClient")
         except SlackApiError as e:
-            LOGGER.info(
-                f"Could not initialize SlackClient. " f"Error: {e.response['error']}.",
-            )
+            log_and_raise_error(f"Could not initialize SlackClient. "
+                                f"Error: {e.response.get('error', 'No error info in response')}.")
         if init_block is True:
             assert python_job_name is not None
             self.initialize_block_message(job_name=python_job_name)
@@ -60,10 +61,10 @@ class SlackClient:
             self.slack_client.chat_postMessage(
                 channel=f"#{self.slack_channel}", text=message
             )
+            log("Successfully posted simple message")
         except SlackApiError as e:
-            LOGGER.info(
-                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
-            )
+            log_and_raise_error(f"Could not post message. "
+                                f"Error: {e.response.get('error', 'No error info in response')}.")
 
     def send_secret_message_in_channel(
             self,
@@ -82,11 +83,10 @@ class SlackClient:
             self.slack_client.chat_postEphemeral(
                 channel=f"#{self.slack_channel}", text=message, user=user
             )
+            log("Successfully posted secret message")
         except SlackApiError as e:
-            LOGGER.info(
-                f"Could not post secret message on Slack. "
-                f"Error: {e.response['error']}.",
-            )
+            log_and_raise_error(f"Could not send secret message. "
+                                f"Error: {e.response.get('error', 'No error info in response')}.")
 
     def send_block_message(self) -> None:
         """Send a block message (self.blocks) on Slack and store the response."""
@@ -94,10 +94,10 @@ class SlackClient:
             self.response = self.slack_client.chat_postMessage(
                 channel=f"#{self.slack_channel}", blocks=self.blocks
             )
+            log("Successfully sent message block")
         except SlackApiError as e:
-            LOGGER.info(
-                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
-            )
+            log_and_raise_error(f"Could not send block message. "
+                                f"Error: {e.response.get('error', 'No error info in response')}.")
 
     def update_block_message(self) -> None:
         """Dynamically update block message and update the response."""
@@ -107,10 +107,10 @@ class SlackClient:
                 blocks=self.blocks,
                 ts=self.response["ts"],
             )
+            log("Successfully updated message block")
         except (SlackApiError, KeyError) as e:
-            LOGGER.info(
-                f"Could not post message on Slack. " f"Error: {e.response['error']}.",
-            )
+            log_and_raise_error(f"Could not update block message. "
+                                f"Error: {e.response.get('error', 'No error info in response')}.")
 
     def initialize_block_message(self, job_name: str) -> None:
         """
