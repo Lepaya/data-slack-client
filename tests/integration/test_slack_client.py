@@ -2,35 +2,40 @@ import unittest
 from pathlib import Path
 
 from data_slack_client.slack_client import SlackClient
-from tests.configs.config_loader import load_config
+from tests.integration.configs.config_loader import load_config
+
+PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
+CONFIG_FILE_PATH = f"{PROJECT_ROOT}/tests/integration/configs/config.yml"
 
 
 class TestSlackClient(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         """Initialize the SlackClient with valid configuration."""
-        PROJECT_ROOT = Path(__file__).parent.parent.resolve()
-        CONFIG_FILE_PATH = f"{PROJECT_ROOT}/tests/configs/config.yml"
         configs = load_config(CONFIG_FILE_PATH)
-        cls.client = SlackClient(config=configs.slack, slack_channel='python-test',
-                                 python_job_name='Slack-Client Testing')
+        cls.client = SlackClient(
+            config=configs.slack,
+            slack_channel="python-test",
+            init_block=True,
+            python_job_name="Slack-Client Testing",
+        )
 
     def test_post_simple_message(self):
         """Test posting a simple message."""
         try:
             self.client.post_simple_message("Test simple message from unittest")
             # Manual verification in Slack is required to confirm message posting
-            self.assertTrue(True)
         except Exception as e:
             self.fail(f"Failed to post simple message: {e}")
 
     def test_send_secret_message_in_channel(self):
         """Test sending a secret message."""
-        valid_user_id = 'valid_user_id'  # Replace with an actual user ID
+        valid_user_id = "valid_user_id"  # Replace with an actual user ID
         try:
-            self.client.send_secret_message_in_channel("Secret message test", user=valid_user_id)
-            self.assertTrue(True)
+            self.client.send_secret_message_in_channel(
+                "Secret message test", user=valid_user_id
+            )
+            # Manual verification in Slack is required to confirm message posting
         except Exception as e:
             self.fail(f"Failed to send secret message: {e}")
 
@@ -40,7 +45,6 @@ class TestSlackClient(unittest.TestCase):
             # Assuming that initialize_block_message has already added a block message
             # This will attempt to send it
             self.client.send_block_message()
-            self.assertTrue(True)
         except Exception as e:
             self.fail(f"Failed to send block message: {e}")
 
@@ -55,7 +59,7 @@ class TestSlackClient(unittest.TestCase):
         self.client.add_success_block()
         # Assuming success block is always added last
         success_block = self.client.blocks[-1]
-        self.assertIn('Job Successful', success_block['elements'][0]['text'])
+        self.assertIn("Job Successful", success_block["elements"][0]["text"])
 
     def test_add_error_block_without_notify(self):
         """Test adding an error block without notification."""
@@ -63,7 +67,7 @@ class TestSlackClient(unittest.TestCase):
         self.client.add_error_block("Test error", notify=False)
         self.assertTrue(len(self.client.blocks) > initial_blocks_count)
         error_block = self.client.blocks[-1]
-        self.assertIn('Error Message', error_block['elements'][0]['text'])
+        self.assertIn("Error Message", error_block["elements"][0]["text"])
 
     def test_add_error_block_with_notify(self):
         """Test adding an error block with notification."""
@@ -72,15 +76,21 @@ class TestSlackClient(unittest.TestCase):
             self.client.add_error_block("Test error with notify", notify=True)
             self.assertTrue(len(self.client.blocks) > initial_blocks_count)
             notify_block = self.client.blocks[-1]
-            self.assertTrue(any('<@' in element['text'] for element in notify_block['elements']))
+            self.assertTrue(
+                any("<@" in element["text"] for element in notify_block["elements"])
+            )
         else:
             self.skipTest("No user specified in SlackConfig for notification")
 
     def test_initialize_block_message(self):
         """Test the initialization of the block message."""
         # This method is implicitly tested in setUpClass but can be further tested here
-        self.assertTrue(len(self.client.blocks) > 0, "Blocks should have been initialized")
-        self.assertIn('Hello *Data Team*!', self.client.blocks[0]['elements'][0]['text'])
+        self.assertTrue(
+            len(self.client.blocks) > 0, "Blocks should have been initialized"
+        )
+        self.assertIn(
+            "Invoking", self.client.blocks[0]["elements"][0]["text"]
+        )
 
 
 if __name__ == "__main__":
