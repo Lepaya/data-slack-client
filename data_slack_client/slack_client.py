@@ -1,6 +1,8 @@
 """Client to interact with Slack."""
 from __future__ import annotations
 
+import random
+import time
 from datetime import datetime
 from typing import Any, Union
 
@@ -49,6 +51,23 @@ class SlackClient:
             assert python_job_name is not None
             self.initialize_block_message(job_name=python_job_name)
 
+    @classmethod
+    def handle_slack_api_error(cls, e: SlackApiError):
+        """
+        Handle Slack API Error including Rate Limit Error.
+
+        Args:
+             e : SlackApiError
+        """
+        if e.response.status_code == 429:
+            retry_after = int(e.response.headers.get("Retry-After", 1))
+            # Calculate exponential backoff time
+            backoff_time = min(retry_after, 30) + random.uniform(0, 10)  # Adding jitter
+            log(f"Rate limit exceeded. Retrying after {backoff_time} seconds.")
+            time.sleep(backoff_time)
+        else:
+            log_and_raise_error(f"Slack API error: {e.response.get('error', 'No error info in response')}.")
+
     def post_simple_message(self, message: str) -> None:
         """
         Post a simple message on Slack.
@@ -63,8 +82,7 @@ class SlackClient:
             )
             log("Successfully posted simple message")
         except SlackApiError as e:
-            log_and_raise_error(f"Could not post message. "
-                                f"Error: {e.response.get('error', 'No error info in response')}.")
+            self.handle_slack_api_error(e)
 
     def send_secret_message_in_channel(
             self,
@@ -85,8 +103,7 @@ class SlackClient:
             )
             log("Successfully posted secret message")
         except SlackApiError as e:
-            log_and_raise_error(f"Could not send secret message. "
-                                f"Error: {e.response.get('error', 'No error info in response')}.")
+            self.handle_slack_api_error(e)
 
     def send_block_message(self) -> None:
         """Send a block message (self.blocks) on Slack and store the response."""
@@ -96,8 +113,7 @@ class SlackClient:
             )
             log("Successfully sent message block")
         except SlackApiError as e:
-            log_and_raise_error(f"Could not send block message. "
-                                f"Error: {e.response.get('error', 'No error info in response')}.")
+            self.handle_slack_api_error(e)
 
     def update_block_message(self) -> None:
         """Dynamically update block message and update the response."""
@@ -108,9 +124,10 @@ class SlackClient:
                 ts=self.response["ts"],
             )
             log("Successfully updated message block")
-        except (SlackApiError, KeyError) as e:
-            log_and_raise_error(f"Could not update block message. "
-                                f"Error: {e.response.get('error', 'No error info in response')}.")
+        except SlackApiError as e:
+            self.handle_slack_api_error(e)
+        except KeyError as e:
+            log_and_raise_error(f"Key error: {e.response.get('error', 'No error info in response')}.")
 
     def initialize_block_message(self, job_name: str) -> None:
         """
