@@ -68,17 +68,18 @@ class SlackClient:
         else:
             log_and_raise_error(f"Slack API error: {e.response.get('error', 'No error info in response')}.")
 
-    def post_simple_message(self, message: str) -> None:
+    def post_simple_message(self, message: str, slack_channel: str = None) -> None:
         """
         Post a simple message on Slack.
 
         Args:
-             message : plain text message.
+             message: plain text message.
+             slack_channel [Optional]: Name of Slack-Channel to write to.
         """
         assert type(message) == str
         try:
             self.slack_client.chat_postMessage(
-                channel=f"#{self.slack_channel}", text=message
+                channel=f"#{slack_channel or self.slack_channel}", text=message
             )
             log("Successfully posted simple message")
         except SlackApiError as e:
@@ -88,6 +89,7 @@ class SlackClient:
             self,
             message: str,
             user: str | None = None,
+            slack_channel: str = None
     ) -> None:
         """
         Post a secret message on Slack to a particular user.
@@ -95,21 +97,26 @@ class SlackClient:
         Args:
              message: plain text message.
              user: user id (member id).
+             slack_channel [Optional]: Name of Slack-Channel to write to. 
         """
         assert type(message) == str and type(user) == str
         try:
             self.slack_client.chat_postEphemeral(
-                channel=f"#{self.slack_channel}", text=message, user=user
+                channel=f"#{slack_channel or self.slack_channel}", text=message, user=user
             )
             log("Successfully posted secret message")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
-    def send_block_message(self) -> None:
-        """Send a block message (self.blocks) on Slack and store the response."""
+    def send_block_message(self, slack_channel: str = None) -> None:
+        """Send a block message (self.blocks) on Slack and store the response.
+        
+        Args:
+             slack_channel [Optional]: Name of Slack-Channel to write to. 
+        """
         try:
             self.response = self.slack_client.chat_postMessage(
-                channel=f"#{self.slack_channel}", blocks=self.blocks
+                channel=f"#{slack_channel or self.slack_channel}", blocks=self.blocks
             )
             log("Successfully sent message block")
         except SlackApiError as e:
