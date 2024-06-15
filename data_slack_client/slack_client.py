@@ -50,7 +50,7 @@ class SlackClient:
                                 f"Error: {e.response.get('error', 'No error info in response')}.")
         if init_block is True:
             assert header is not None
-            self.initialize_block_message(job_name=header)
+            self.initialize_block_message(header_name=header)
 
     @classmethod
     def handle_slack_api_error(cls, e: SlackApiError):
