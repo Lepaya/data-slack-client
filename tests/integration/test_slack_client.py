@@ -17,7 +17,7 @@ class TestSlackClient(unittest.TestCase):
             config=configs.slack,
             slack_channel="python-test",
             init_block=True,
-            python_job_name="Slack-Client Testing",
+            header="Slack-Client Testing",
         )
         cls.valid_user_id = configs.slack.user1
         cls.invalid_user_id = "Invalid ID"

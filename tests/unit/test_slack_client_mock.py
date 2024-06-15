@@ -18,7 +18,7 @@ class TestSlackClient(unittest.TestCase):
         self.mock_slack_client_instance = self.mock_web_client.return_value
 
         self.slack_channel = "test_channel"
-        self.python_job_name = "Test Job"
+        self.header = "Test Job"
         self.message = "Test Message"
         self.user = "Test User"
         self.job_name = "Test Job Name"
