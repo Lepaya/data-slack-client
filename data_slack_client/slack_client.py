@@ -24,7 +24,7 @@ class SlackClient:
     def __init__(self, config: SlackConfig,
                  slack_channel: str,
                  init_block: bool = True,
-                 python_job_name: Union[str, None] = None):
+                 header: Union[str, None] = None):
         """
         Initialize the Slack Client.
 
@@ -35,10 +35,11 @@ class SlackClient:
             slack_channel: Name of Slack-Channel to write to.
             init_block: True if you want to add an introduction block
                         containing a python-job-name,date and time; else False.
-            python_job_name: Name of Python-job if init_block is True, else None.
+            header: Name of Python-job if init_block is True, else None.
         """
         self.config = config
         self.slack_channel = slack_channel
+        self.header = header
         self.blocks: list[dict] = []
         self.response: dict[Any, Any] | SlackResponse = {}
         try:
@@ -48,8 +49,8 @@ class SlackClient:
             log_and_raise_error(f"Could not initialize SlackClient. "
                                 f"Error: {e.response.get('error', 'No error info in response')}.")
         if init_block is True:
-            assert python_job_name is not None
-            self.initialize_block_message(job_name=python_job_name)
+            assert header is not None
+            self.initialize_block_message(job_name=header)
 
     @classmethod
     def handle_slack_api_error(cls, e: SlackApiError):
@@ -61,8 +62,7 @@ class SlackClient:
         """
         if e.response.status_code == 429:
             retry_after = int(e.response.headers.get("Retry-After", 1))
-            # Calculate exponential backoff time
-            backoff_time = min(retry_after, 30) + random.uniform(0, 10)  # Adding jitter
+            backoff_time = min(retry_after, 30) + random.uniform(0, 10)  # Calculate exponential backoff time and Add jitter
             log(f"Rate limit exceeded. Retrying after {backoff_time} seconds.")
             time.sleep(backoff_time)
         else:
@@ -108,15 +108,16 @@ class SlackClient:
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
-    def send_block_message(self, slack_channel: str = None) -> None:
-        """Send a block message (self.blocks) on Slack and store the response.
+    def send_block_message(self, slack_channel: str = None, blocks: list[dict] = None) -> None:
+        """Send a block message on Slack and store the response.
         
         Args:
              slack_channel [Optional]: Name of Slack-Channel to write to. 
+             blocks: [Optional]: Slack message block object.
         """
         try:
             self.response = self.slack_client.chat_postMessage(
-                channel=f"#{slack_channel or self.slack_channel}", blocks=self.blocks
+                channel=f"#{slack_channel or self.slack_channel}", blocks=blocks or self.blocks
             )
             log("Successfully sent message block")
         except SlackApiError as e:
@@ -136,14 +137,14 @@ class SlackClient:
         except KeyError as e:
             log_and_raise_error(f"Key error: {e.response.get('error', 'No error info in response')}.")
 
-    def initialize_block_message(self, job_name: str) -> None:
+    def initialize_block_message(self, header_name: str) -> None:
         """
         Initialize Slack block message and send it to Slack.
 
         Args:
-             job_name: Name of python job (Eg. Salesforce-Updater).
+             header_name: Block message Header Name (Eg. Salesforce-Updater).
         """
-        assert type(job_name) == str
+        assert type(header_name) == str
         amsterdam_tz = pytz.timezone("Europe/Amsterdam")
         self.blocks = [
             {
@@ -151,7 +152,7 @@ class SlackClient:
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"Invoking *{job_name}* :on: \n"
+                        "text": f"Invoking *{header_name}* :on: \n"
                                 f"Date: {datetime.now(amsterdam_tz).strftime('%Y-%m-%d')} \t"
                                 f"Time: {datetime.now(amsterdam_tz).time()}",
                     }
