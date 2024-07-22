@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 import time
 from datetime import datetime
-from typing import Any, Union, Optional
+from typing import Any, Optional, Union
 
 import pytz
 import structlog
