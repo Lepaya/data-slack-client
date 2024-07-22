@@ -1,4 +1,2 @@
 slack:
   bot_token: !ENV ${SLACK_BOT_TOKEN}
-  user1: !ENV ${SLACK_MEMBER_ID_1}
-  user2: !ENV ${SLACK_MEMBER_ID_2}
