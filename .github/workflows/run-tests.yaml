@@ -22,11 +22,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip 
           pip install pipenv
-          pipenv install
+          pipenv install --dev
+      
+      - name: Run pre-commit
+        run: |
+          pipenv run pre-commit run --all-files
 
       - name: Run tests
         run: pipenv run python -m unittest discover -s tests
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_MEMBER_ID_1: ${{ secrets.SLACK_MEMBER_ID_1 }}
-          SLACK_MEMBER_ID_2: ${{ secrets.SLACK_MEMBER_ID_2 }}
