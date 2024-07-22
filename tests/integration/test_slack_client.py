@@ -18,8 +18,12 @@ class TestSlackClient(unittest.TestCase):
             slack_channel="python-test",
             init_block=True,
             header="Slack-Client Testing",
+            stakeholders={
+                "Humaid Mollah": "U03TQ448VS8",
+                "Karolina Osiak": "U03RPSHJHK7",
+            },
         )
-        cls.valid_user_id = configs.slack.user1
+        cls.valid_user_id = "U03TQ448VS8"
         cls.invalid_user_id = "Invalid ID"
 
     def test_post_simple_message(self):
@@ -30,12 +34,21 @@ class TestSlackClient(unittest.TestCase):
         except Exception as e:
             self.fail(f"Failed to post simple message: {e}")
 
+    def test_post_simple_message_with_tagging(self):
+        """Test posting a simple message with stakeholder tagging."""
+        try:
+            self.client.post_simple_message(
+                "Test simple message with tagging", tag_stakeholders=True
+            )
+            # Manual verification in Slack is required to confirm message posting
+        except Exception as e:
+            self.fail(f"Failed to post simple message with tagging: {e}")
+
     def test_send_secret_message_in_channel(self):
         """Test sending a secret message."""
-
         try:
             self.client.send_secret_message_in_channel(
-                "Secret message test", user=self.valid_user_id
+                "Secret message test", user_member_id=self.valid_user_id
             )
             # Manual verification in Slack is required to confirm message posting
         except Exception as e:
@@ -43,10 +56,9 @@ class TestSlackClient(unittest.TestCase):
 
     def test_send_secret_message_in_channel_invalid_user_id(self):
         """Test sending a secret to an invalid user."""
-
         with self.assertRaises(ValueError):
             self.client.send_secret_message_in_channel(
-                "Secret message test", user=self.invalid_user_id
+                "Secret message test", user_member_id=self.invalid_user_id
             )
 
     def test_send_block_message(self):
@@ -64,6 +76,27 @@ class TestSlackClient(unittest.TestCase):
         self.client.add_message_block("Test block message")
         self.assertTrue(len(self.client.blocks) > initial_blocks_count)
 
+    def test_add_message_block_with_tagging(self):
+        """Test adding a message block with stakeholder tagging."""
+        initial_blocks_count = len(self.client.blocks)
+        self.client.add_message_block(
+            "Test block message with tagging", tag_stakeholders=True
+        )
+        self.assertTrue(len(self.client.blocks) > initial_blocks_count)
+        message_block = self.client.blocks[-1]
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Humaid Mollah"] in element["text"]
+                for element in message_block["elements"]
+            )
+        )
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Karolina Osiak"] in element["text"]
+                for element in message_block["elements"]
+            )
+        )
+
     def test_add_success_block(self):
         """Test adding a success message block."""
         self.client.add_success_block()
@@ -71,26 +104,51 @@ class TestSlackClient(unittest.TestCase):
         success_block = self.client.blocks[-1]
         self.assertIn("Job Successful", success_block["elements"][0]["text"])
 
-    def test_add_error_block_without_notify(self):
-        """Test adding an error block without notification."""
+    def test_add_success_block_with_tagging(self):
+        """Test adding a success message block with stakeholder tagging."""
+        self.client.add_success_block(tag_stakeholders=True)
+        success_block = self.client.blocks[-1]
+        self.assertIn("Job Successful", success_block["elements"][0]["text"])
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Humaid Mollah"] in element["text"]
+                for element in success_block["elements"]
+            )
+        )
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Karolina Osiak"] in element["text"]
+                for element in success_block["elements"]
+            )
+        )
+
+    def test_add_error_block_without_tagging(self):
+        """Test adding an error block without stakeholder tagging."""
         initial_blocks_count = len(self.client.blocks)
-        self.client.add_error_block("Test error", notify=False)
+        self.client.add_error_block("Test error", tag_stakeholders=False)
         self.assertTrue(len(self.client.blocks) > initial_blocks_count)
         error_block = self.client.blocks[-1]
-        self.assertIn("Error Message", error_block["elements"][0]["text"])
+        self.assertIn("Error Message", error_block["elements"][1]["text"])
 
-    def test_add_error_block_with_notify(self):
-        """Test adding an error block with notification."""
-        if self.client.config.user1 or self.client.config.user2:
-            initial_blocks_count = len(self.client.blocks)
-            self.client.add_error_block("Test error with notify", notify=True)
-            self.assertTrue(len(self.client.blocks) > initial_blocks_count)
-            notify_block = self.client.blocks[-1]
-            self.assertTrue(
-                any("<@" in element["text"] for element in notify_block["elements"])
+    def test_add_error_block_with_tagging(self):
+        """Test adding an error block with stakeholder tagging."""
+        initial_blocks_count = len(self.client.blocks)
+        self.client.add_error_block("Test error with tagging", tag_stakeholders=True)
+        self.assertTrue(len(self.client.blocks) > initial_blocks_count)
+        error_block = self.client.blocks[-1]
+        self.assertIn("Error Message", error_block["elements"][1]["text"])
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Humaid Mollah"] in element["text"]
+                for element in error_block["elements"]
             )
-        else:
-            self.skipTest("No user specified in SlackConfig for notification")
+        )
+        self.assertTrue(
+            any(
+                self.client.stakeholders["Karolina Osiak"] in element["text"]
+                for element in error_block["elements"]
+            )
+        )
 
     def test_initialize_block_message(self):
         """Test the initialization of the block message."""
@@ -98,9 +156,7 @@ class TestSlackClient(unittest.TestCase):
         self.assertTrue(
             len(self.client.blocks) > 0, "Blocks should have been initialized"
         )
-        self.assertIn(
-            "Invoking", self.client.blocks[0]["elements"][0]["text"]
-        )
+        self.assertIn("Invoking", self.client.blocks[0]["elements"][0]["text"])
 
 
 if __name__ == "__main__":
