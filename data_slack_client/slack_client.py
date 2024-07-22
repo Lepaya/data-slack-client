@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 import time
 from datetime import datetime
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 import pytz
 import structlog
@@ -28,7 +28,7 @@ class SlackClient:
         slack_channel: str,
         init_block: bool = True,
         header: Union[str, None] = None,
-        stakeholders: dict = {},
+        stakeholders: Optional[dict] = {},
     ):
         """
         Initialize the Slack Client.
