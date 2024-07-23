@@ -44,7 +44,6 @@ class SlackClient:
             stakeholders (dict[str, str]): A dictionary with stakeholder names as keys and member IDs as values.
         """
         assert isinstance(stakeholders, dict)
-        assert isinstance(config, SlackConfig)
         self.config = config
         self.slack_channel = slack_channel
         self.header = header
