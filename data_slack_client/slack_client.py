@@ -139,7 +139,6 @@ class SlackClient:
              blocks: [Optional]: Slack message block object.
         """
         try:
-            log(slack_channel or self.slack_channel)
             self.response = self.slack_client.chat_postMessage(
                 channel=f"#{slack_channel or self.slack_channel}",
                 blocks=blocks or self.blocks,
@@ -229,7 +228,7 @@ class SlackClient:
         if self.response is not None:
             self.update_block_message()
         else:
-            self.send_block_message(self.blocks)
+            self.send_block_message()
         
         if temp:
             self.blocks.pop()
