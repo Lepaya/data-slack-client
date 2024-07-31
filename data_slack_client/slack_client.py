@@ -49,7 +49,7 @@ class SlackClient:
         self.header = header
         self.stakeholders = stakeholders
         self.blocks: list[dict] = []
-        self.response: dict[Any, Any] | SlackResponse = {}
+        self.response: dict[Any, Any] | SlackResponse = None
         try:
             self.slack_client = WebClient(token=self.config.bot_token)
             log("Successfully initialized Slack WebClient")
@@ -61,6 +61,8 @@ class SlackClient:
         if init_block is True:
             assert header is not None
             self.initialize_block_message(header_name=header)
+        else:
+            
 
     @classmethod
     def handle_slack_api_error(cls, e: SlackApiError):
@@ -224,8 +226,11 @@ class SlackClient:
                 "elements": block_elements,
             }
         )
-
-        self.update_block_message()
+        if self.response is not None:
+            self.update_block_message()
+        else:
+            self.send_block_message(self.blocks)
+        
         if temp:
             self.blocks.pop()
 
