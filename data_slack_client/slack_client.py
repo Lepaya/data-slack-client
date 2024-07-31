@@ -139,7 +139,7 @@ class SlackClient:
              blocks: [Optional]: Slack message block object.
         """
         try:
-            print(slack_channel or self.slack_channel)
+            log(slack_channel or self.slack_channel)
             self.response = self.slack_client.chat_postMessage(
                 channel=f"#{slack_channel or self.slack_channel}",
                 blocks=blocks or self.blocks,
