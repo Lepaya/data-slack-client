@@ -61,7 +61,6 @@ class SlackClient:
         if init_block is True:
             assert header is not None
             self.initialize_block_message(header_name=header)
-        else:
             
 
     @classmethod
