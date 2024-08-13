@@ -27,9 +27,7 @@ class TestSlackClient(unittest.TestCase):
 
         self.stakeholders = {"stakeholder1": "U123456", "stakeholder2": "U654321"}
 
-        self.config = SlackConfig(
-            bot_token="test_token", user1="user_1", user2="user_2"
-        )
+        self.config = SlackConfig(bot_token="test_token", user1="user_1", user2="user_2")
         self.slack_client = SlackClient(
             config=self.config,
             slack_channel=self.slack_channel,
@@ -94,9 +92,7 @@ class TestSlackClient(unittest.TestCase):
             "ts": "123.456",
         }
         self.slack_client.send_block_message()  # Setup initial message
-        self.slack_client.add_message_block(
-            self.message, self.img_url, self.img_alt_text, temp=False
-        )
+        self.slack_client.add_message_block(self.message, self.img_url, self.img_alt_text, temp=False)
         self.mock_slack_client_instance.chat_update.assert_called_once()
 
     def test_add_success_block(self):
@@ -110,12 +106,7 @@ class TestSlackClient(unittest.TestCase):
         }
         # Add success block
         self.slack_client.add_success_block()
-        self.assertTrue(
-            any(
-                "Job Successful" in block["elements"][0]["text"]
-                for block in self.slack_client.blocks
-            )
-        )
+        self.assertTrue(any("Job Successful" in block["elements"][0]["text"] for block in self.slack_client.blocks))
 
     def test_add_error_block(self):
         """Test adding an error message block."""
@@ -128,18 +119,8 @@ class TestSlackClient(unittest.TestCase):
         }
         # Add error block
         self.slack_client.add_error_block("Error occurred", True)
-        self.assertTrue(
-            any(
-                "Job Unsuccessful" in block["elements"][0]["text"]
-                for block in self.slack_client.blocks
-            )
-        )
-        self.assertTrue(
-            any(
-                "Error occurred" in block["elements"][1]["text"]
-                for block in self.slack_client.blocks
-            )
-        )
+        self.assertTrue(any("Job Unsuccessful" in block["elements"][0]["text"] for block in self.slack_client.blocks))
+        self.assertTrue(any("Error occurred" in block["elements"][1]["text"] for block in self.slack_client.blocks))
 
     def test_build_tag_stakeholder_message(self):
         """Test building stakeholder tag message."""

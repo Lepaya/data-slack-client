@@ -55,13 +55,11 @@ class SlackClient:
             log("Successfully initialized Slack WebClient")
         except SlackApiError as e:
             log_and_raise_error(
-                f"Could not initialize SlackClient. "
-                f"Error: {e.response.get('error', 'No error info in response')}."
+                f"Could not initialize SlackClient. " f"Error: {e.response.get('error', 'No error info in response')}."
             )
         if init_block is True:
             assert header is not None
             self.initialize_block_message(header_name=header)
-            
 
     @classmethod
     def handle_slack_api_error(cls, e: SlackApiError):
@@ -79,12 +77,10 @@ class SlackClient:
             log(f"Rate limit exceeded. Retrying after {backoff_time} seconds.")
             time.sleep(backoff_time)
         else:
-            log_and_raise_error(
-                f"Slack API error: {e.response.get('error', 'No error info in response')}."
-            )
+            log_and_raise_error(f"Slack API error: {e.response.get('error', 'No error info in response')}.")
 
     def post_simple_message(
-        self, message: str, slack_channel: str = None, tag_stakeholders: bool = False
+        self, message: str, slack_channel: Optional[str] = None, tag_stakeholders: bool = False
     ) -> None:
         """
         Post a simple message on Slack.
@@ -100,15 +96,13 @@ class SlackClient:
             message += "\n" + self.build_tag_stakeholder_message()
 
         try:
-            self.slack_client.chat_postMessage(
-                channel=f"#{slack_channel or self.slack_channel}", text=message
-            )
+            self.slack_client.chat_postMessage(channel=f"#{slack_channel or self.slack_channel}", text=message)
             log("Successfully posted simple message")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
     def send_secret_message_in_channel(
-        self, message: str, user_member_id: str | None = None, slack_channel: str = None
+        self, message: str, user_member_id: str | None = None, slack_channel: Optional[str] = None
     ) -> None:
         """
         Post a secret message on Slack to a particular user.
@@ -129,9 +123,7 @@ class SlackClient:
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
-    def send_block_message(
-        self, slack_channel: str = None, blocks: list[dict] = None
-    ) -> None:
+    def send_block_message(self, slack_channel: Optional[str] = None, blocks: Optional[list[dict]] = None) -> None:
         """Send a block message on Slack and store the response.
 
         Args:
@@ -159,9 +151,7 @@ class SlackClient:
         except SlackApiError as e:
             self.handle_slack_api_error(e)
         except KeyError as e:
-            log_and_raise_error(
-                f"Key error: {e.response.get('error', 'No error info in response')}."
-            )
+            log_and_raise_error(f"Key error: {e}.")
 
     def initialize_block_message(self, header_name: str) -> None:
         """
@@ -186,7 +176,7 @@ class SlackClient:
             },
             {"type": "divider"},
         ]
-        self.blocks = block_elements
+        self.blocks = block_elements  # type: ignore
         self.send_block_message()
 
     def add_message_block(
@@ -210,14 +200,10 @@ class SlackClient:
         block_elements = [{"type": "mrkdwn", "text": message}]
 
         if img_url is not None:
-            block_elements.insert(
-                0, {"type": "image", "image_url": img_url, "alt_text": img_alt_text}
-            )
+            block_elements.insert(0, {"type": "image", "image_url": img_url, "alt_text": img_alt_text})
 
         if tag_stakeholders and self.stakeholders:
-            block_elements.append(
-                {"type": "mrkdwn", "text": self.build_tag_stakeholder_message()}
-            )
+            block_elements.append({"type": "mrkdwn", "text": self.build_tag_stakeholder_message()})
 
         self.blocks.append(
             {
@@ -229,7 +215,7 @@ class SlackClient:
             self.update_block_message()
         else:
             self.send_block_message()
-        
+
         if temp:
             self.blocks.pop()
 
@@ -243,9 +229,7 @@ class SlackClient:
         block_elements = [{"type": "mrkdwn", "text": " *Job Successful* !! :tada: "}]
 
         if tag_stakeholders and self.stakeholders:
-            block_elements.append(
-                {"type": "mrkdwn", "text": self.build_tag_stakeholder_message()}
-            )
+            block_elements.append({"type": "mrkdwn", "text": self.build_tag_stakeholder_message()})
 
         self.blocks.append(
             {
@@ -256,9 +240,7 @@ class SlackClient:
 
         self.update_block_message()
 
-    def add_error_block(
-        self, error_message: str | None = None, tag_stakeholders: bool = False
-    ) -> None:
+    def add_error_block(self, error_message: str | None = None, tag_stakeholders: bool = False) -> None:
         """
         Add error block to the Slack message block.
 
@@ -266,19 +248,13 @@ class SlackClient:
             error_message (str, optional): Plain error text message. Defaults to None.
             tag_stakeholders (bool, optional): Whether to tag stakeholders in the message. Defaults to False.
         """
-        block_elements = [
-            {"type": "mrkdwn", "text": " *Job Unsuccessful* :disappointed_relieved: "}
-        ]
+        block_elements = [{"type": "mrkdwn", "text": " *Job Unsuccessful* :disappointed_relieved: "}]
 
         if error_message is not None:
-            block_elements.append(
-                {"type": "mrkdwn", "text": f" *Error Message* : {error_message} \n"}
-            )
+            block_elements.append({"type": "mrkdwn", "text": f" *Error Message* : {error_message} \n"})
 
         if tag_stakeholders and self.stakeholders:
-            block_elements.append(
-                {"type": "mrkdwn", "text": self.build_tag_stakeholder_message()}
-            )
+            block_elements.append({"type": "mrkdwn", "text": self.build_tag_stakeholder_message()})
 
         self.blocks.append(
             {
