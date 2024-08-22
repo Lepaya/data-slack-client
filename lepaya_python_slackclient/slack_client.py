@@ -1,17 +1,19 @@
 """Client to interact with Slack."""
+
 from __future__ import annotations
 
+import os
 from datetime import datetime
 from typing import Any
 
 import structlog
+from models.config_model import SlackConfig
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web import SlackResponse
 
-from models.config_model import SlackConfig
-
 LOGGER = structlog.get_logger()
+SEND_TO_SLACK = os.environ.get("SEND_TO_SLACK") == "TRUE" or False
 
 
 class SlackClient:
@@ -43,18 +45,19 @@ class SlackClient:
         """
         assert type(message) == str
         try:
-            self.slack_client.chat_postMessage(
-                channel=f"#{self.slack_channel}", text=message
-            )
+            if SEND_TO_SLACK:
+                self.slack_client.chat_postMessage(channel=f"#{self.slack_channel}", text=message)
+            else:
+                LOGGER.info(f"Slack: channel: {self.slack_channel}\n\tMessage: {message}")
         except SlackApiError as e:
             LOGGER.info(
                 f"Could not post message on Slack. Error: {e.response['error']}",
             )
 
     def send_secret_message_in_channel(
-            self,
-            message: str,
-            user: str | None = None,
+        self,
+        message: str,
+        user: str | None = None,
     ) -> None:
         """
         Post a secret message on Slack to a particular user.
@@ -65,9 +68,10 @@ class SlackClient:
         """
         assert type(message) == str and type(user) == str
         try:
-            self.slack_client.chat_postEphemeral(
-                channel=f"#{self.slack_channel}", text=message, user=user
-            )
+            if SEND_TO_SLACK:
+                self.slack_client.chat_postEphemeral(channel=f"#{self.slack_channel}", text=message, user=user)
+            else:
+                LOGGER.info(f"Slack: channel: {self.slack_channel}\n\tMessage: {message}")
         except SlackApiError as e:
             LOGGER.info(
                 f"Could not post secret message on Slack. Error: {e.response['error']}",
@@ -76,9 +80,10 @@ class SlackClient:
     def send_block_message(self) -> None:
         """Send a block message (self.blocks) on Slack and store the response."""
         try:
-            self.response = self.slack_client.chat_postMessage(
-                channel=f"#{self.slack_channel}", blocks=self.blocks
-            )
+            if SEND_TO_SLACK:
+                self.response = self.slack_client.chat_postMessage(channel=f"#{self.slack_channel}", blocks=self.blocks)
+            else:
+                LOGGER.info(f"Slack: channel: {self.slack_channel}\n\tMessage: {self.blocks}")
         except SlackApiError as e:
             LOGGER.info(
                 f"Could not post message on Slack. Error: {e.response['error']}",
@@ -87,11 +92,14 @@ class SlackClient:
     def update_block_message(self) -> None:
         """Dynamically update block message and update the response."""
         try:
-            self.response = self.slack_client.chat_update(
-                channel=self.response["channel"],
-                blocks=self.blocks,
-                ts=self.response["ts"],
-            )
+            if SEND_TO_SLACK:
+                self.response = self.slack_client.chat_update(
+                    channel=self.response["channel"],
+                    blocks=self.blocks,
+                    ts=self.response["ts"],
+                )
+            else:
+                LOGGER.info(f"Slack update: channel: {self.slack_channel}\n\tMessage: {self.blocks}")
         except SlackApiError as e:
             LOGGER.info(
                 f"Could not post message on Slack. Error: {e.response['error']}",
@@ -122,10 +130,10 @@ class SlackClient:
         self.send_block_message()
 
     def add_message_block(
-            self,
-            message: str,
-            img_url: str | None = None,
-            temp: bool = False,
+        self,
+        message: str,
+        img_url: str | None = None,
+        temp: bool = False,
     ) -> None:
         """
         Add a message to the Slack block message.
@@ -174,9 +182,7 @@ class SlackClient:
         )
         self.update_block_message()
 
-    def add_error_block(
-            self, error_message: str | None = None, notify: bool = False
-    ) -> None:
+    def add_error_block(self, error_message: str | None = None, notify: bool = False) -> None:
         """
         Add error block to the Slack message block.
 
