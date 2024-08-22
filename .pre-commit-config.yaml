@@ -1,67 +1,35 @@
 repos:
-- repo: local
-  hooks:
-  - id: isort
-    name: isort
-    stages: [commit]
-    language: system
-    entry: pipenv run isort --check
-    types: [python]
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        name: black
+        stages: [commit]
+        args: ["--line-length", "120"]
 
-  - id: black
-    name: black
-    stages: [ commit ]
-    language: system
-    entry: pipenv run black --check
-    types: [ python ]
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        name: flake8
+        stages: [commit]
+        args: ["--max-line-length", "120", "--ignore=E225,W503,E272,E241"]
+        types: [python]
+        exclude: setup.py
 
-  - id: flake8
-    name: flake8
-    stages: [commit]
-    language: system
-    entry: pipenv run flake8 --max-line-length 120
-    types: [python]
-    exclude: setup.py
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort
+        stages: [commit]
+        args: ["--profile", "black", "--check"]
 
-  - id: pydocstyle
-    name: pydocstyle
-    stages: [commit]
-    language: system
-    entry: pipenv run pydocstyle
-    types: [python]
-    exclude: setup.py
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.8.0'
+    hooks:
+    -   id: mypy
+        additional_dependencies:
+          - types-PyYAML
+          - types-pytz
 
-  - id: mypy
-    name: mypy
-    stages: [commit]
-    language: system
-    entry: pipenv run mypy .
-    types: [python]
-    pass_filenames: false
-    args: [--ignore-missing-imports]
-
-#      - id: pytest
-#        name: pytest
-#        stages: [ commit ]
-#        language: system
-#        entry: pipenv run pytest
-#        types: [ python ]
-#
-#      - id: pytest-cov
-#        name: pytest
-#        stages: [ push ]
-#        language: system
-#        entry: pipenv run pytest --cov --cov-fail-under=100
-#        types: [ python ]
-#        pass_filenames: false
-
-
-- repo: https://github.com/sourcery-ai/sourcery
-  rev: v1.0.4
-  hooks:
-    # refer to https://docs.sourcery.ai/Product/Troubleshooting/ to fix errors
-    - id: sourcery
-      # The best way to use Sourcery in a pre-commit hook:
-      # * review only changed lines:
-      # * omit the summary
-      args: [--diff=git diff HEAD, --no-summary]

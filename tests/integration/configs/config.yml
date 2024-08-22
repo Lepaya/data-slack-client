@@ -1,0 +1,2 @@
+slack:
+  bot_token: !ENV ${SLACK_BOT_TOKEN}
