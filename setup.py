@@ -22,12 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=[
-        "slack-sdk~=3.19",
-        "structlog~=22.3",
-        "pydantic~=1.9",
-        "pytz~=2024.1",
-    ],
+    install_requires=["slack-sdk~=3.19", "structlog~=22.3", "pydantic~=1.9", "pytz~=2024.1", "bumpversion"],
     keywords=["python", "slack", "message", "blocks", "dynamic"],
     classifiers=[
         "Development Status :: 1 - Planning",
