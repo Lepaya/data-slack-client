@@ -8,14 +8,13 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = "4.0"
 DESCRIPTION = "Python slack client for Lepaya"
 LONG_DESCRIPTION = "A package that allows to interact with the slack sdk and dynamically send messages to slack"
 
 # Setting up
 setup(
     name="data_slack_client",
-    version=VERSION,
+    version="4.0.0",
     author="Humaid Mollah",
     author_email="humaid.mollah@lepaya.com",
     description=DESCRIPTION,
