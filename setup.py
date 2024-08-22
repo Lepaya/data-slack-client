@@ -14,7 +14,7 @@ LONG_DESCRIPTION = "A package that allows to interact with the slack sdk and dyn
 # Setting up
 setup(
     name="data_slack_client",
-    version="4.0.1",
+    version="4.0.2",
     author="Humaid Mollah",
     author_email="humaid.mollah@lepaya.com",
     description=DESCRIPTION,
