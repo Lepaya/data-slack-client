@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import random
 import time
 from datetime import datetime
@@ -17,6 +18,7 @@ from .helpers.logging_helper import log, log_and_raise_error
 from .models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
+SEND_TO_SLACK = os.getenv("SEND_TO_SLACK", "TRUE").lower() == "TRUE"
 
 
 class SlackClient:
@@ -95,9 +97,13 @@ class SlackClient:
         if tag_stakeholders and self.stakeholders:
             message += "\n" + self.build_tag_stakeholder_message()
 
+        channel = f"#{slack_channel or self.slack_channel}"
         try:
-            self.slack_client.chat_postMessage(channel=f"#{slack_channel or self.slack_channel}", text=message)
-            log("Successfully posted simple message")
+            if SEND_TO_SLACK:
+                self.slack_client.chat_postMessage(channel=channel, text=message)
+                log("Successfully posted simple message")
+            else:
+                log(f"Simple message to slack: channel: {channel}\n\tmessage: {message}")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
@@ -113,13 +119,19 @@ class SlackClient:
              slack_channel [Optional]: Name of Slack-Channel to write to.
         """
         assert isinstance(message, str) and isinstance(user_member_id, str)
+
+        channel = f"#{slack_channel or self.slack_channel}"
         try:
-            self.slack_client.chat_postEphemeral(
-                channel=f"#{slack_channel or self.slack_channel}",
-                text=message,
-                user=user_member_id,
-            )
-            log("Successfully posted secret message")
+            if SEND_TO_SLACK:
+                self.slack_client.chat_postEphemeral(
+                    channel=channel,
+                    text=message,
+                    user=user_member_id,
+                )
+                log("Successfully posted secret message")
+            else:
+                log(f"Secret message to slack: channel: {channel}\n\tmessage: {message}")
+
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
@@ -130,24 +142,31 @@ class SlackClient:
              slack_channel [Optional]: Name of Slack-Channel to write to.
              blocks: [Optional]: Slack message block object.
         """
+        channel = f"#{slack_channel or self.slack_channel}"
         try:
-            self.response = self.slack_client.chat_postMessage(
-                channel=f"#{slack_channel or self.slack_channel}",
-                blocks=blocks or self.blocks,
-            )
-            log("Successfully sent message block")
+            if SEND_TO_SLACK:
+                self.response = self.slack_client.chat_postMessage(
+                    channel=channel,
+                    blocks=blocks or self.blocks,
+                )
+                log("Successfully sent message block")
+            else:
+                log(f"Block message to slack: channel: {channel}\n\tmessage: {blocks or self.blocks}")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
     def update_block_message(self) -> None:
         """Dynamically update block message and update the response."""
         try:
-            self.response = self.slack_client.chat_update(
-                channel=self.response["channel"],
-                blocks=self.blocks,
-                ts=self.response["ts"],
-            )
-            log("Successfully updated message block")
+            if SEND_TO_SLACK:
+                self.response = self.slack_client.chat_update(
+                    channel=self.response["channel"],
+                    blocks=self.blocks,
+                    ts=self.response["ts"],
+                )
+                log("Successfully updated message block")
+            else:
+                log(f"Block message to slack: message: {self.blocks})")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
         except KeyError as e:
