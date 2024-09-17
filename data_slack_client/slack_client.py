@@ -18,7 +18,7 @@ from .helpers.logging_helper import log, log_and_raise_error
 from .models.config_model import SlackConfig
 
 LOGGER = structlog.get_logger()
-SEND_TO_SLACK = os.getenv("SEND_TO_SLACK", "TRUE").lower() == "TRUE"
+SEND_TO_SLACK = os.getenv("SEND_TO_SLACK", "FALSE").lower() == "true"
 
 
 class SlackClient:
