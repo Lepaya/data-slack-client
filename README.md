@@ -8,7 +8,7 @@ The Lepaya Slack Client is a Python library that allows you to interact with the
 
 ## Installation
 To install this python package, run the following command:
-``pipenv install -e "git+https://github.com/Lepaya/data-slack-client@release-4.0#egg=data-slack-client``
+``pipenv install -e "git+https://github.com/Lepaya/data-slack-client#egg=data-slack-client``
 
 ## Usage
 
