@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 
@@ -6,8 +7,10 @@ from tests.integration.configs.config_loader import load_config
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 CONFIG_FILE_PATH = f"{PROJECT_ROOT}/tests/integration/configs/config.yml"
+SEND_TO_SLACK = os.getenv("SEND_TO_SLACK", "false").lower() == "true"
 
 
+@unittest.skipUnless(SEND_TO_SLACK, "Skipping tests because SEND_TO_SLACK is not set to true")
 class TestSlackClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

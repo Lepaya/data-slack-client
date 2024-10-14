@@ -59,6 +59,10 @@ class SlackClient:
             log_and_raise_error(
                 f"Could not initialize SlackClient. " f"Error: {e.response.get('error', 'No error info in response')}."
             )
+
+        if not SEND_TO_SLACK:
+            log("SEND_TO_SLACK = False, To enable sending messages to slack, set env-var SEND_TO_SLACK = True")
+
         if init_block is True:
             assert header is not None
             self.initialize_block_message(header_name=header)
@@ -103,8 +107,7 @@ class SlackClient:
                 self.slack_client.chat_postMessage(channel=channel, text=message)
                 log("Successfully posted simple message")
             else:
-                # log(f"Simple message to slack: channel: {channel}\n\tmessage: {message}")
-                pass
+                print(f"Simple message to slack: channel: {channel}\n\tMessage: {message}")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
@@ -131,8 +134,7 @@ class SlackClient:
                 )
                 log("Successfully posted secret message")
             else:
-                # log(f"Secret message to slack: channel: {channel}\n\tmessage: {message}")
-                pass
+                print(f"Secret message to slack: channel: {channel}\n\tMessage: {message}")
 
         except SlackApiError as e:
             self.handle_slack_api_error(e)
@@ -153,8 +155,7 @@ class SlackClient:
                 )
                 log("Successfully sent message block")
             else:
-                # log(f"Block message to slack: channel: {channel}\n\tmessage: {blocks or self.blocks}")
-                pass
+                print(f"Block message to slack: channel: {channel}\n\tBlock Message: {blocks or self.blocks}")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
 
@@ -169,8 +170,7 @@ class SlackClient:
                 )
                 log("Successfully updated message block")
             else:
-                # log(f"Block message to slack: message: {self.blocks})")
-                pass
+                print(f"Block message to slack: {self.blocks})")
         except SlackApiError as e:
             self.handle_slack_api_error(e)
         except KeyError as e:

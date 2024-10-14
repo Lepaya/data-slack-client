@@ -1,10 +1,14 @@
+import os
 import unittest
 from unittest.mock import patch
 
 from data_slack_client.models.config_model import SlackConfig
 from data_slack_client.slack_client import SlackClient
 
+SEND_TO_SLACK = os.getenv("SEND_TO_SLACK", "false").lower() == "true"
 
+
+@unittest.skipUnless(SEND_TO_SLACK, "Skipping tests because SEND_TO_SLACK is not set to true")
 class TestSlackClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
