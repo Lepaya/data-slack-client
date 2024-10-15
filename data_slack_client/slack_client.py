@@ -261,7 +261,10 @@ class SlackClient:
             }
         )
 
-        self.update_block_message()
+        if self.response is not None:
+            self.update_block_message()
+        else:
+            self.send_block_message()
 
     def add_error_block(self, error_message: str | None = None, tag_stakeholders: bool = False) -> None:
         """
@@ -286,7 +289,10 @@ class SlackClient:
             }
         )
 
-        self.update_block_message()
+        if self.response is not None:
+            self.update_block_message()
+        else:
+            self.send_block_message()
 
     def build_tag_stakeholder_message(self) -> str:
         """
